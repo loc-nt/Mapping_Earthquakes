@@ -11,7 +11,7 @@ console.log("working");
     let satelliteStyle = 'satellite-streets-v11'
         
         // Copy an API styles from Mapbox Glossary and put it into the tilelayer()
-    let styles1 = L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/${streetStyle}/tiles/{z}/{x}/{y}?access_token={accessToken}`, {        
+    let styles1 = L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/${lightStyle}/tiles/{z}/{x}/{y}?access_token={accessToken}`, {        
             attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 18,
             accessToken: API_KEY
@@ -25,7 +25,7 @@ console.log("working");
     
     // Create a base layer that holds both maps.
     let baseMaps = {
-        Street: styles1,
+        Light: styles1,
         Dark: styles2
       };
 
@@ -33,24 +33,34 @@ console.log("working");
 // Create the map object with a center and zoom level (to view the center of US by default):
     // This is just a gray object on html, it's blank, nothing show up yet. L stands for Leaflet
     let map = L.map('mapid', {
-        center: [30, 30],
+        center: [44, -80],
         zoom: 2,
-        layers: [styles1]
+        layers: [styles2]
     }) // [lat,long] and zoom level (scale 0-18)
 
     // Pass our map layers into our layers control and add the layers control to the map. (allo end-user to select the map style)
     L.control.layers(baseMaps).addTo(map);
     
     // Accessing the airport GeoJSON URL
-    let airportData = "https://raw.githubusercontent.com/loc-nt/Mapping_Earthquakes/master/majorAirports.json";
-    
+    let airportData = "https://raw.githubusercontent.com/loc-nt/Mapping_Earthquakes/master/majorAirports.json";    
+
+    // Accessing the Toronto airline routes GeoJSON URL.
+    let torontoData = "https://raw.githubusercontent.com/loc-nt/Mapping_Earthquakes/master/torontoRoutes.json";
+
+    // Create a style for the lines.
+    let myStyle = {
+        color: '#ffffa1', //color for the lines
+        weight: 2, //line weight
+        }
+
     // Grabbing our GeoJSON data.
-    d3.json(airportData).then(function(data) {
+    d3.json(torontoData).then(function(data) {
         console.log(data);
         // Creating a GeoJSON layer with the retrieved data.
         L.geoJson(data, {
+            style: myStyle,
             onEachFeature: function(feature, layer) {
-                            layer.bindPopup(`<h3>Airport Code: ${feature.properties.faa}</h3> <hr> <h3>Airport Name: ${feature.properties.name}</h3>`); // another dot notation to add popup together with the marker
+                            layer.bindPopup(`<h3>Airport: ${feature.properties.airline}</h3> <hr> <h3>Destination: ${feature.properties.dst}</h3>`); // another dot notation to add popup together with the marker
                             }
                         }        
             )    
